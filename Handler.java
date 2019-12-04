@@ -1,48 +1,64 @@
+
 package sockets;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class Handler implements Runnable {
     private final Socket clientSocket;
-
-    public Handler(Socket socket) {
-        this.clientSocket = socket;
-    }
+    Handler(Socket socket) {this.clientSocket = socket;}
+    private String line = "";
 
     @Override
     public void run() {
-        BufferedReader in = null;
-        PrintWriter out = null;
+        BufferedReader input = null;
+        PrintWriter output = null;
 
         try {
-            String line;
-            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            out = new PrintWriter(clientSocket.getOutputStream(), true);
+            input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            output = new PrintWriter(clientSocket.getOutputStream(), true);
 
-            while ((line = in.readLine()) != null) {
-                System.out.printf("Sent from the client: %s\n", line);
-                out.println(line);
+            while ((line = input.readLine()) != null) {
+                System.out.printf("Request from the client: %s\n", line);
+                output.println(SendFile(line));
             }
         }
-        catch (IOException ex) {
-            ex.printStackTrace();
-        }
+
+        catch (IOException ex) {ex.printStackTrace();}
         finally {
             try {
-                if (out != null) {
-                    out.close();
+                if (output != null) {
+                    output.close();
                 }
-                if (in != null)
-                    in.close();
+                if (input != null)
+                    input.close();
                 clientSocket.close();
             }
-            catch (IOException ex) {
-                ex.printStackTrace();
+            catch (IOException ex) {ex.printStackTrace();}
+        }
+    }
+
+    /**
+     * Function that gets a request from the user and send
+     * back the file requested from the user
+     *
+     * @param file
+     * @return "destinations.txt"
+     */
+    private String SendFile (String file) {
+        try (Scanner read = new Scanner(new File("destinations.txt"))) {
+            do {
+                if (file.isEmpty())
+                    System.out.println("=============The file is empty==============");
+            }
+            while(read.hasNext()); {
+                file += read.nextLine();
             }
         }
+        catch (FileNotFoundException ex) {
+            ex.fillInStackTrace();
+        }
+        return file;
     }
 }
