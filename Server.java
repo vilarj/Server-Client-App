@@ -1,3 +1,4 @@
+
 package sockets;
 
 import java.io.IOException;
@@ -30,8 +31,7 @@ public class Server {
         finally {
             if (server != null) {
                 try {
-                    server.close();
-                }
+                    server.close();}
                 catch (IOException ex) {ex.printStackTrace();}
             }
         }
