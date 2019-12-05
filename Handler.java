@@ -43,22 +43,26 @@ public class Handler implements Runnable {
      * Function that gets a request from the user and send
      * back the file requested from the user
      *
-     * @param file
+     * @param fileName
      * @return "destinations.txt"
      */
-    private String SendFile (String file) {
-        try (Scanner read = new Scanner(new File("destinations.txt"))) {
-            do {
-                if (file.isEmpty())
-                    System.out.println("=============The file is empty==============");
+    private String SendFile (String fileName) throws IOException {
+        File f = new File(fileName);
+        String newString = "";
+        try (Scanner read = new Scanner(f)) {
+            if (f.length() == 0)
+                System.out.println("=============The file is empty==============");
+
+            while (read.hasNext()) {
+                newString += read.nextLine() + " ";
             }
-            while(read.hasNext()); {
-                file += read.nextLine();
-            }
+        } catch (FileNotFoundException ex) {
+            System.exit(0);
         }
-        catch (FileNotFoundException ex) {
-            ex.fillInStackTrace();
-        }
-        return file;
+        //return newString;
+        BufferedWriter writer = new BufferedWriter(new FileWriter("newFile.txt"));
+        writer.write(newString);
+        writer.close();
+        return "Your file can be found src folder after this process has been terminated.";
     }
 }
