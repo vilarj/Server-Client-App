@@ -1,6 +1,3 @@
-
-package sockets;
-
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
@@ -23,46 +20,51 @@ public class Handler implements Runnable {
                 System.out.printf("Request from the client: %s\n", line);
                 output.println(SendFile(line));
             }
-        }
+        } catch (IOException ex) {ex.printStackTrace();}
 
-        catch (IOException ex) {ex.printStackTrace();}
         finally {
             try {
-                if (output != null) {
+
+                if (output != null)
                     output.close();
-                }
+
                 if (input != null)
                     input.close();
+
                 clientSocket.close();
-            }
-            catch (IOException ex) {ex.printStackTrace();}
+            } catch (IOException ex) {ex.printStackTrace();}
         }
     }
 
     /**
-     * Function that gets a request from the user and send
-     * back the file requested from the user
-     *
+     * Gets the file name from the users request and if the file exists,
+     * returns the contents to the user in a new file
      * @param fileName
-     * @return "destinations.txt"
+     * @return a message that informs the user of
+     * the location of the file after it is sent
      */
     private String SendFile (String fileName) throws IOException {
-        File f = new File(fileName);
-        String newString = "";
-        try (Scanner read = new Scanner(f)) {
-            if (f.length() == 0)
-                System.out.println("=============The file is empty==============");
+        File file = new File(fileName);
+        String msg = "";
+
+        try (Scanner read = new Scanner(file)) {
+            if (file.length() == 0) {
+                System.out.println("File was empty");
+                return "=============The file is empty==============";
+            }
 
             while (read.hasNext()) {
-                newString += read.nextLine() + " ";
+                msg += read.nextLine() + "\n";
             }
         } catch (FileNotFoundException ex) {
-            System.exit(0);
+            System.out.println("File not found");
+            return "=============The file wan't found==============";
         }
-        //return newString;
-        BufferedWriter writer = new BufferedWriter(new FileWriter("newFile.txt"));
-        writer.write(newString);
+
+        BufferedWriter writer = new BufferedWriter(new FileWriter("src\\contentsOfRequestedFile.txt"));
+        writer.write(msg);
         writer.close();
-        return "Your file can be found src folder after this process has been terminated.";
+        System.out.println("File successfully transferred");
+        return "Your file can be found src folder after this process has been terminated under name: contentsOfRequestedFile.txt.";
     }
 }

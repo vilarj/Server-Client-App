@@ -1,6 +1,3 @@
-
-package sockets;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.ServerSocket;
@@ -14,7 +11,6 @@ public class Server {
         try {
             server = new ServerSocket(5000);
             server.setReuseAddress(true);
-
             System.out.print("~~Server initialized~~\n");
 
             // Main is implemented to accept many connections (many clients)
@@ -22,17 +18,19 @@ public class Server {
                 Socket client = server.accept();
                 System.out.println("User IP: {" + client.getInetAddress().getHostAddress() + "}");
                 Handler clientSock = new Handler(client);
-
                 // The background thread will handle each client separately
                 new Thread(clientSock).start();
             }
         }
         catch (IOException ex) {ex.printStackTrace();}
+
         finally {
+
             if (server != null) {
+
                 try {
-                    server.close();}
-                catch (IOException ex) {ex.printStackTrace();}
+                    server.close();
+                } catch (IOException ex) {ex.printStackTrace();}
             }
         }
     }
