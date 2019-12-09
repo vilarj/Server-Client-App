@@ -65,7 +65,6 @@ public class Handler implements Runnable {
         writer.write(msg);
         writer.close();
         System.out.println("File successfully transferred");
-        //return "Your file can be found src folder after this process has been terminated under name: contentsOfRequestedFile.txt.";
         return "Your file can be found on your desktop after this process has been terminated: contentsOfRequestedFile.txt";
     }
 }
